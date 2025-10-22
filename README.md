@@ -1,78 +1,84 @@
-# Manus DJ 🎧
+# Manus DJ v2.0 🎧 (with Notion Integration)
 
-A personalized, automated daily music discovery system that runs on macOS. This project uses AppleScript and the YouTube Data API to create a new YouTube Music playlist every day, curated by an AI (Manus ) based on a specific prompt.
+A personalized, automated daily music discovery system that runs on macOS. This project uses AppleScript, the YouTube Data API, and the **Notion API** to create a new YouTube Music playlist every day, curated by an AI (Manus) and managed through a personal music database in Notion.
 
-This system was born from a series of conversations with the AI agent Manus, exploring the connections between music taste, personality, and systems thinking. It's a practical implementation of that dialogue—a bridge between a love for music and a passion for building elegant, automated solutions.
+This system has evolved from a simple playlist generator into an intelligent music management tool. It not only creates playlists but also maintains a memory of your listening history, preferences, and discovery queue, creating a powerful feedback loop for smarter recommendations.
 
 ## How It Works
 
-The system is composed of four main parts:
+The system now revolves around a central "Music Brain" database in Notion.
 
-1.  **Configuration (`config.sh`):** A central file to hold your YouTube API credentials and playlist preferences.
-2.  **Authentication (`get_token.py`):** A one-time Python script that handles the secure OAuth 2.0 handshake with Google to grant the necessary permissions.
-3.  **The Engine (`manus_dj.applescript`):** The core AppleScript that runs daily. It simulates a call to the Manus AI, gets a list of curated tracks, finds them on YouTube, and builds a new private playlist in your account.
-4.  **The Scheduler (`launchd`):** A native macOS `launchd` agent that triggers the AppleScript automatically at a set time every day.
+1.  **Notion Database:** The source of truth for your music library. It holds artists, albums, ratings, and a listening queue (`To Listen`, `Now Playing`, `Listened`).
+2.  **The Engine (`manus_dj_notion.applescript`):** The core AppleScript performs a sophisticated daily routine:
+    *   **Check the Queue:** It first queries your Notion database for any tracks you've marked as `To Listen`.
+    *   **Curate or Discover:**
+        *   If the queue has tracks, it builds the daily playlist from them.
+        *   If the queue is empty, it simulates a call to the Manus AI to get *new* recommendations.
+    *   **Avoid Duplicates:** Before adding a new discovery, it checks your Notion database to ensure the artist hasn't been added before.
+    *   **Build the Playlist:** It uses the YouTube API to find the tracks and create a new, private daily playlist.
+    *   **Update the Database:** After creating the playlist, it updates your Notion database. It adds newly discovered artists and updates the status of queued tracks from `To Listen` to `Now Playing`.
+3.  **The Scheduler (`launchd`):** A native macOS agent triggers the script automatically at a set time every day.
 
 ## Features
 
--   **Fully Automated:** Runs every day at a scheduled time without any user interaction.
--   **Personalized Curation:** The playlist is based on a specific prompt, simulating a request to an AI DJ.
--   **Secure:** Uses OAuth 2.0 for authentication. Your password is never stored or used. All sensitive tokens are kept locally on your machine.
--   **Native macOS Integration:** Built with AppleScript and `launchd` for a lightweight and robust solution.
--   **User-Friendly Notifications:** Provides a system notification when the playlist is ready and automatically opens it in your browser.
+-   **Intelligent Music Queue:** Manages a "To Listen" list directly within Notion.
+-   **Learning System:** Avoids recommending artists you already have in your database.
+-   **Automated Archiving:** Automatically adds new discoveries to your Notion "Music Brain."
+-   **Status Tracking:** Updates the status of tracks in Notion as they are added to a playlist.
+-   **Fully Automated & Secure:** All the great features from v1.0, now with a persistent, cloud-based memory.
 
 ## Setup Instructions
 
-### Step 1: Get YouTube API Credentials
+### Step 1: Set Up Notion
 
-1.  Go to the [Google Cloud Console](https://console.cloud.google.com/ ).
-2.  Create a new project.
-3.  In the project dashboard, go to "APIs & Services" > "Library" and enable the **YouTube Data API v3**.
-4.  Go to "APIs & Services" > "Credentials".
-5.  Click "Create Credentials" > "OAuth client ID".
-6.  Choose "Desktop app" as the application type.
-7.  After creation, download the JSON file. This file contains your `client_id` and `client_secret`.
+1.  Create a new, full-page database in Notion named **"Music Brain"**.
+2.  Add the following properties (case-sensitive):
+    *   `Artist` (Title)
+    *   `Album` (Text)
+    *   `Status` (Select, with options: `To Listen`, `Now Playing`, `Listened`)
+    *   `Rating` (Select, with options: `⭐️` to `⭐️⭐️⭐️⭐️⭐️`)
+    *   `Genre` (Multi-select)
+    *   `Notes` (Text)
+3.  **Get Notion Credentials:**
+    *   Create a new internal integration at [notion.so/my-integrations](https://www.notion.so/my-integrations ).
+    *   Copy the **Internal Integration Token** (your API key).
+    *   Share your "Music Brain" database with your new integration.
+    *   Copy the **Database ID** from your database's URL.
 
-### Step 2: Configure the Project
+### Step 2: Get YouTube API Credentials
 
-1.  Clone this repository or download the files into a folder on your Mac (e.g., `~/Projects/ManusDJ`).
-2.  **`config.sh`**: Open this file and replace `YOUR_CLIENT_ID` and `YOUR_CLIENT_SECRET` with the values from the JSON file you downloaded.
-3.  **`client_secret.json`**: Create this file in the project directory. Copy the contents of the JSON file you downloaded from Google into it, ensuring it's wrapped in an `"installed": {}` block as shown in the `get_token.py` script's comments.
+(Follow the same steps as in v1.0: create a project in Google Cloud Console, enable the YouTube Data API v3, and get your OAuth 2.0 Client ID and Secret).
 
-### Step 3: Authenticate with Google
+### Step 3: Configure the Project
 
-This is a one-time step to authorize the application.
+1.  Clone this repository or download the files.
+2.  **`config.sh`**: Open this file and fill in all four required values: `CLIENT_ID`, `CLIENT_SECRET`, `NOTION_API_KEY`, and `NOTION_DATABASE_ID`.
+3.  **`client_secret.json`**: Create this file and add your YouTube OAuth credentials as described in the `get_token.py` script.
 
-1.  Make sure you have Python 3 installed on your Mac.
-2.  Install the necessary Python libraries by opening Terminal and running:
+### Step 4: Authenticate with Google
+
+(This one-time step is the same as in v1.0. Run `pip3 install...` and then `python3 get_token.py` to generate your `token.json` file).
+
+### Step 5: Set Up the Scheduler
+
+1.  **Edit the `.plist` file:** Open the `.plist` file.
+    -   Update the `Label` to be unique (e.g., `com.yourname.manusdj.notion`).
+    -   **Crucially**, update the path to point to the new `manus_dj_notion.applescript` file.
+2.  **Install and load the agent:**
     ```bash
-    pip3 install google-auth-oauthlib google-api-python-client
-    ```
-3.  Navigate to your project folder in Terminal and run the authentication script:
-    ```bash
-    python3 get_token.py
-    ```
-4.  Your web browser will open, asking you to log in to your Google account and grant permission. Approve the request.
-5.  Once completed, a `token.json` file will be created in your project folder. This file stores the token needed for future automated runs.
-
-### Step 4: Set Up the Scheduler
-
-1.  **Edit the `.plist` file:** Open `com.yourname.manusdj.plist`.
-    -   Change `com.yourname.manusdj` to a unique name (e.g., `com.majalemaja.manusdj`).
-    -   **Crucially**, update the path `/Users/yourusername/Projects/ManusDJ/manus_dj.applescript` to the correct absolute path of the `manus_dj.applescript` file on your Mac.
-2.  **Install the agent:** Copy the edited `.plist` file into the `~/Library/LaunchAgents` folder.
-    ```bash
+    # Copy the plist to your LaunchAgents folder
     cp com.yourname.manusdj.plist ~/Library/LaunchAgents/
-    ```
-3.  **Load the agent:** Open Terminal and run the following command to load the service. It will now run automatically at the scheduled time.
-    ```bash
+
+    # Load the agent to start the schedule
     launchctl load ~/Library/LaunchAgents/com.yourname.manusdj.plist
     ```
 
-### To Run Manually
+### Usage Workflow
 
-You can test the script at any time by simply opening `manus_dj.applescript` in the Script Editor and clicking the "Run" button.
+1.  To add music to your queue, simply add a new entry in your Notion "Music Brain" database and set its `Status` to `To Listen`.
+2.  The next time the script runs, it will automatically pick up these tracks for your daily playlist.
+3.  If your queue is empty, the script will go into discovery mode and find new music for you, adding it directly to Notion.
 
 ---
 
-This project is a testament to the idea that the tools we use can be deeply personal and beautifully integrated into our lives. Enjoy your daily soundtrack!
+This project is now a true "second brain" for your musical journey. Enjoy!
