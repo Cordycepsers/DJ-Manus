@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.yourname.manusdj</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>osascript</string>
+        <!-- IMPORTANT: Update this path to where you saved the AppleScript -->
+        <string>/Users/yourusername/Projects/ManusDJ/manus_dj.applescript</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <!-- This will run the script every day at 8:05 AM -->
+        <key>Hour</key>
+        <integer>8</integer>
+        <key>Minute</key>
+        <integer>5</integer>
+    </dict>
+    <key>StandardErrorPath</key>
+    <!-- Optional: A log file to capture any errors -->
+    <string>/tmp/manusdj.err</string>
+</dict>
+</plist>
