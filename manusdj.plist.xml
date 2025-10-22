@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.yourname.manusdj.python</string>
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Path to your Python 3 executable -->
+        <string>/usr/bin/python3</string>
+        <!-- IMPORTANT: Update this path to where you saved the Python script -->
+        <string>/Users/yourusername/Projects/ManusDJ/manus_dj_final.py</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>8</integer>
+        <key>Minute</key>
+        <integer>5</integer>
+    </dict>
+    <!-- Set environment variables for the script -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>NOTION_API_KEY</key>
+        <string>secret_YOUR_NOTION_API_KEY</string>
+        <key>NOTION_DATABASE_ID</key>
+        <string>YOUR_NOTION_DATABASE_ID</string>
+        <key>PLAYLIST_NAME</key>
+        <string>Manus DJ</string>
+    </dict>
+    <key>StandardErrorPath</key>
+    <string>/tmp/manusdj.err</string>
+    <key>StandardOutPath</key>
+    <string>/tmp/manusdj.out</string>
+</dict>
+</plist>
