@@ -44,6 +44,59 @@ The system revolves around a central "Music Brain" database in Notion and is dri
     ```
 3.  This will open your browser for you to grant permission. Once complete, it will create an `oauth.json` file in your project folder. This is all you need for authentication.
 
+ ### `ytmusicapi` has two ways to perform OAuth:
+
+1.  **The Default Method (as described below):** It uses a pre-configured Client ID that is built into the library. This is the easiest method, but sometimes it can fail or be rate-limited by Google.
+   
+3.  **The Manual Method:** When the default method isn't available, it falls back to asking you to provide your *own* Client ID and Secret. This is more work for you upfront, but it's actually more robust and reliable in the long run because you are not sharing a public client ID with other users of the library.
+
+### Get Your Client ID and Secret
+
+Here is the step-by-step guide to get the credentials the wizard is asking for.
+
+**Step 1: Go to Google Cloud Console**
+*   Open this link in your browser: [https://console.cloud.google.com/](https://console.cloud.google.com/)
+
+**Step 2: Create a New Project**
+*   At the top of the page, click the project dropdown (it might say "My First Project").
+*   Click **"NEW PROJECT"**.
+*   Give it a name, like "Manus DJ Project", and click **"CREATE"**.
+
+**Step 3: Enable the YouTube Data API v3**
+*   Once your project is created, use the search bar at the top and search for "YouTube Data API v3".
+*   Click on it in the search results and then click the **"ENABLE"** button.
+
+**Step 4: Configure the OAuth Consent Screen**
+This is a required step where you tell Google about the "app" you're building.
+*   In the left-hand menu, go to "APIs & Services" > **"OAuth consent screen"**.
+*   Choose **"External"** for the User Type and click **"CREATE"**.
+*   Fill in the required fields:
+    *   **App name:** "Manus DJ"
+    *   **User support email:** Your email address.
+    *   **Developer contact information:** Your email address again.
+*   Click **"SAVE AND CONTINUE"** through the "Scopes" and "Test users" sections. You don't need to add anything there for this purpose. Finally, go back to the "OAuth consent screen" and click **"PUBLISH APP"** to put it into production mode (this avoids token expiration issues).
+
+**Step 5: Create Your OAuth 2.0 Credentials**
+This is where you get the ID and Secret the script is asking for.
+*   In the left-hand menu, go to "APIs & Services" > **"Credentials"**.
+*   Click **"+ CREATE CREDENTIALS"** at the top and select **"OAuth client ID"**.
+*   For "Application type", choose **"Desktop app"**.
+*   Give it a name (like "Manus DJ Desktop Client") and click **"CREATE"**.
+
+**Step 6: Get the ID and Secret**
+*   A window will pop up showing you your **"Client ID"** and **"Client Secret"**. Success!
+
+### Final Step: Complete the Wizard
+
+Now, go back to your VS Code terminal where the `ytmusicapi oauth` command is waiting.
+
+1.  Copy the **Client ID** from the Google Cloud popup and paste it into the terminal where it asks: `Enter your Google Youtube Data API client ID:`. Press Enter.
+2.  Next, it will ask: `Enter your Google Youtube Data API client secret:`. Copy the **Client Secret** and paste it in. Press Enter.
+
+After you provide these two pieces of information, the rest of the process will continue as I originally described. Your browser will open, you'll grant permission, and the `oauth.json` file will be created.
+
+This `oauth.json` file will now contain your personal, robust authentication credentials, and the system will be ready to go. You've just completed the most difficult part of the entire setup.
+
 ### Step 3: Configure the Project
 
 1.  Clone this repository or download the files.
