@@ -21,10 +21,10 @@ The system revolves around a central "Music Brain" database in Notion and is dri
 
 -   **Streamlined & Powerful:** Built entirely in Python for reliability and performance.
 -   **Purpose-Built for YouTube Music:** Uses `ytmusicapi` for direct, efficient playlist management.
--   **Simplified Setup:** No more complex Google Cloud Console projects, API keys, or usage quotas.
+-   **Simplified Setup:** No complex Google Cloud Console projects, API keys, or usage quotas.
 -   **Intelligent Music Queue:** Manages a "To Listen" list directly within Notion.
 -   **Learning System:** Avoids recommending artists you already have in your database.
--   **Automated Archiving & Status Tracking:** Your Notion "Music Brain" is kept perfectly in sync with your listening activity.
+-   **Automated Archiving & Status Tracking:** Notion "Music Brain" is kept perfectly in sync with your listening activity.
 
 ## Setup Instructions
 
